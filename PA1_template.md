@@ -107,7 +107,7 @@ The 5-minute interval, on average across all the days in the dataset, contains t
 ## Imputing missing values
 Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.    
 
-T1- o calculate the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+1- To calculate the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
 
 ```r
