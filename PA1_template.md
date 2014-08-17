@@ -55,7 +55,7 @@ str(activity)
 
 ## What is mean total number of steps taken per day?
 For this part of the assignment, we ignore the missing values in the dataset.  
-1. Histogram of the total number of steps taken each day  
+1- Histogram of the total number of steps taken each day  
 
 ```r
 TotalStepsDay <- tapply (activity$steps, activity$date, sum)
@@ -64,7 +64,7 @@ hist(TotalStepsDay, main = "Total Number of Steps per Day", xlab = "Total number
 
 ![plot of chunk TotalStepsDay1](figure/TotalStepsDay1.png) 
   
-2. The mean and median total number of steps taken per day
+2- The mean and median total number of steps taken per day
 
 ```r
 mean_TotalStepsDay <- round(mean(TotalStepsDay, na.rm = TRUE))
@@ -84,7 +84,7 @@ AverageStepsInterval.DF <- data.frame(AverageStepsInterval)
 AverageStepsInterval.DF$interval <- interval
 ```
 
-1. Time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+1- Time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 ```r
 plot(AverageStepsInterval.DF$interval, AverageStepsInterval.DF$AverageStepsInterval,xaxt="n",  type="l", xlab = "5-minute interval", ylab = "Average Number of Steps Taken (Averaged Across All Days)", main = "Average Daily Activity Pattern")
@@ -93,7 +93,7 @@ axis(1, labels = c('0:00', '5:00', '10:00', '15:00', '20:00'), at = c(0, 500, 10
 
 ![plot of chunk AverageStepsInterval2](figure/AverageStepsInterval2.png) 
 
-2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+2- Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 ```r
 AverageStepsInterval.DF.Sorted <- order(AverageStepsInterval.DF$AverageStepsInterval, decreasing = TRUE)
@@ -107,7 +107,7 @@ The 5-minute interval, on average across all the days in the dataset, contains t
 ## Imputing missing values
 Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.    
 
-To calculate the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+T1- o calculate the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
 
 ```r
@@ -117,7 +117,7 @@ MeanNAs <- mean(is.na(activity$steps))*100
 
 The total number of missing values in the dataset is **2304** values, with percentage of **13.1148%**.  
 
-2. A strategy for filling in all of the missing values in the dataset.   
+2- A strategy for filling in all of the missing values in the dataset.   
 We use the **mean of the 5-minute intervals across all the days** in the dataset to fill in the missing values.  
 
 
@@ -136,7 +136,7 @@ NA.Index <- is.na(CombinedDF$stepsFilled)
 CombinedDF$stepsFilled[NA.Index] <- CombinedDF$AverageStepsInterval[NA.Index]
 ```
 
-3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+3- Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 
 ```r
@@ -155,7 +155,7 @@ head(activity.new)
 ## 6  0.000 2012-10-06        0
 ```
 
-4. A histogram of the total number of steps taken each day and calculation of the mean and median total number of steps taken per day.   
+4- A histogram of the total number of steps taken each day and calculation of the mean and median total number of steps taken per day.   
 
 Histogram of the total number of steps taken each day:  
 
@@ -184,7 +184,7 @@ Comparing to estimates from the first part of the assignment, mean value did not
 
 We use the dataset with the filled-in missing values for this part.  
 
-1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+1- Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
 
 ```r
@@ -218,7 +218,7 @@ AverageSteps <- rbind(AverageSteps.weekday,AverageSteps.weekend)
 AverageSteps$interval <- as.numeric(as.character(AverageSteps$intervalFactor))
 ```
 
-2. Panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
+2- Panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
 
 ```r
@@ -233,6 +233,7 @@ xyplot(steps~interval|weekdayFactor, data = AverageSteps, layout=c(1,2), type = 
 
 
 ```r
+# This function converts the interval to standard time format HH:MM
 InTime <- function(x){
         if (x<10) {
                 x.new <- paste("000",x,sep="")
