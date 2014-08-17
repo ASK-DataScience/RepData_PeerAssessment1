@@ -24,10 +24,31 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
   
 
 ## Loading and preprocessing the data
-```{r LoadingData, echo=TRUE, cache=TRUE}
+
+```r
 activity <- read.csv("./activity.csv")
 head (activity)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
+```r
 str(activity)
+```
+
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Factor w/ 61 levels "2012-10-01","2012-10-02",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
 ```
 
 
@@ -35,23 +56,28 @@ str(activity)
 ## What is mean total number of steps taken per day?
 For this part of the assignment, we ignore the missing values in the dataset.  
 1. Histogram of the total number of steps taken each day  
-```{r TotalStepsDay1, echo=TRUE}
+
+```r
 TotalStepsDay <- tapply (activity$steps, activity$date, sum)
 hist(TotalStepsDay, main = "Total Number of Steps per Day", xlab = "Total number of steps per day")
 ```
+
+![plot of chunk TotalStepsDay1](figure/TotalStepsDay1.png) 
   
 2. The mean and median total number of steps taken per day
-```{r TotalStepsDay2, echo=TRUE}
+
+```r
 mean_TotalStepsDay <- round(mean(TotalStepsDay, na.rm = TRUE))
 median_TotalStepsDay <- median(TotalStepsDay, na.rm = TRUE)
 ```
 
-The **mean** and **median** of the total number of steps taken per day are **`r mean_TotalStepsDay`** steps and **`r median_TotalStepsDay`** steps respectively.  
+The **mean** and **median** of the total number of steps taken per day are **1.0766 &times; 10<sup>4</sup>** steps and **10765** steps respectively.  
 
 
 ## What is the average daily activity pattern?
 To calculate the average number of steps for each interval across all days:
-```{r AverageStepsInterval1, echo=TRUE}
+
+```r
 AverageStepsInterval <- tapply (activity$steps, activity$interval, mean, na.rm = TRUE)
 interval <- rownames(AverageStepsInterval)
 AverageStepsInterval.DF <- data.frame(AverageStepsInterval)
@@ -59,19 +85,23 @@ AverageStepsInterval.DF$interval <- interval
 ```
 
 1. Time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-```{r AverageStepsInterval2, echo=TRUE}
+
+```r
 plot(AverageStepsInterval.DF$interval, AverageStepsInterval.DF$AverageStepsInterval,xaxt="n",  type="l", xlab = "5-minute interval", ylab = "Average Number of Steps Taken (Averaged Across All Days)", main = "Average Daily Activity Pattern")
 axis(1, labels = c('0:00', '5:00', '10:00', '15:00', '20:00'), at = c(0, 500, 1000, 1500, 2000))
 ```
 
+![plot of chunk AverageStepsInterval2](figure/AverageStepsInterval2.png) 
+
 2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r AverageStepsInterval3, echo=TRUE}
+
+```r
 AverageStepsInterval.DF.Sorted <- order(AverageStepsInterval.DF$AverageStepsInterval, decreasing = TRUE)
 MaxInterval <- AverageStepsInterval.DF$interval[AverageStepsInterval.DF.Sorted[1]]
 MaxInterval.Time <- InTime(as.numeric(MaxInterval))
 ```
 
-The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is the **`r MaxInterval.Time`** interval.  
+The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is the **08:35** interval.  
 
 
 ## Imputing missing values
@@ -79,49 +109,73 @@ Note that there are a number of days/intervals where there are missing values (c
 
 To calculate the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r TotalNAs, echo=TRUE}
+
+```r
 TotalNAs <- sum(is.na(activity$steps))
 MeanNAs <- mean(is.na(activity$steps))*100
 ```
 
-The total number of missing values in the dataset is **`r TotalNAs`** values, with percentage of **`r MeanNAs`%**.  
+The total number of missing values in the dataset is **2304** values, with percentage of **13.1148%**.  
 
 2. A strategy for filling in all of the missing values in the dataset.   
 We use the **mean of the 5-minute intervals across all the days** in the dataset to fill in the missing values.  
 
-```{r FillNAs, echo=TRUE, results='hide'}
+
+```r
 activity$stepsFilled <- activity$steps
 library(plyr)
 CombinedDF <- arrange(join(activity, AverageStepsInterval.DF),interval)
+```
+
+```
+## Joining by: interval
+```
+
+```r
 NA.Index <- is.na(CombinedDF$stepsFilled)
 CombinedDF$stepsFilled[NA.Index] <- CombinedDF$AverageStepsInterval[NA.Index]
 ```
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r NewActivity, echo=TRUE}
+
+```r
 activity.new <- data.frame(CombinedDF$stepsFilled, CombinedDF$date,CombinedDF$interval)
 names(activity.new) <- c('steps','date','interval')
 head(activity.new)
+```
+
+```
+##    steps       date interval
+## 1  1.717 2012-10-01        0
+## 2  0.000 2012-10-02        0
+## 3  0.000 2012-10-03        0
+## 4 47.000 2012-10-04        0
+## 5  0.000 2012-10-05        0
+## 6  0.000 2012-10-06        0
 ```
 
 4. A histogram of the total number of steps taken each day and calculation of the mean and median total number of steps taken per day.   
 
 Histogram of the total number of steps taken each day:  
 
-```{r TotalStepsDayNew1, echo=TRUE}
+
+```r
 TotalStepsDay.new <- tapply (activity.new$steps, activity.new$date, sum)
 hist(TotalStepsDay.new, main = "Total Number of Steps per Day After Filling The Missing Values", xlab = "Total number of steps per day")
 ```
 
+![plot of chunk TotalStepsDayNew1](figure/TotalStepsDayNew1.png) 
+
 To calculate the mean and median total number of steps taken per day:  
 
-```{r TotalStepsDayNew2, echo=TRUE}
+
+```r
 mean_TotalStepsDay.new <- round(mean(TotalStepsDay.new))
 median_TotalStepsDay.new <- round(median(TotalStepsDay.new))
 ```
 
-The mean and median of the total number of steps taken per day in this case are **`r mean_TotalStepsDay.new`** steps and **`r median_TotalStepsDay.new`** steps respectively. 
+The mean and median of the total number of steps taken per day in this case are **1.0766 &times; 10<sup>4</sup>** steps and **1.0766 &times; 10<sup>4</sup>** steps respectively. 
 
 Comparing to estimates from the first part of the assignment, mean value did not change at all while the median value is slightly changed. Median value equals to the mean value in this case.  
 
@@ -132,7 +186,8 @@ We use the dataset with the filled-in missing values for this part.
 
 1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r WeekDay1, echo=TRUE}
+
+```r
 activity.new$dateFormat <- as.Date(activity.new$date)
 activity.new$weekday <- weekdays(activity.new$dateFormat)
 activity.new$weekdayFactor <- rep(0,nrow(activity.new))
@@ -150,7 +205,8 @@ activity.new2 <- activity.new[,c(1,6,7)]
 
 To calculate the average number of steps over the weekday day or the weekend day:  
 
-```{r WeekDay2, echo=TRUE}
+
+```r
 activity.new2.weekday <- subset(activity.new2, weekdayFactor =="weekday")
 activity.new2.weekend <- subset(activity.new2, weekdayFactor =="weekend")
 library(plyr)
@@ -164,15 +220,19 @@ AverageSteps$interval <- as.numeric(as.character(AverageSteps$intervalFactor))
 
 2. Panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
-```{r WeekDay3, echo=TRUE}
+
+```r
 library(lattice)
 xyplot(steps~interval|weekdayFactor, data = AverageSteps, layout=c(1,2), type = "l", xlab = 'Interval', ylab = 'Number of Steps')
 ```
 
+![plot of chunk WeekDay3](figure/WeekDay3.png) 
+
 
 ## Helping Functions Used in The Analysis
 
-```{r InTimeFun, echo=TRUE}
+
+```r
 InTime <- function(x){
         if (x<10) {
                 x.new <- paste("000",x,sep="")
@@ -186,7 +246,6 @@ InTime <- function(x){
         x.new2 <- strptime(x.new, format="%H%M")
         Intime <- format(x.new2, "%H:%M")
 }
-
 ```
 
 
